@@ -1,17 +1,21 @@
-export type BurnDegree = 1 | 2 | 3 | 4;
+import { AgeGroup, BodyPart } from '../utils/ageCoefficients';
+import { BurnDegree, BurnFraction } from './burnInput';
 
-export interface BurnZoneCalculation {
-    zoneId: string;
-    zoneName: string;
-    percent: number;
+export interface CalculationZone {
+    bodyPart: BodyPart;
+    fraction: BurnFraction;
     degree: BurnDegree;
+    percent: number;
 }
 
-export interface CalculationResult {
+export interface CalculationEntity {
+    id: string;
+    ageGroup: AgeGroup;
+    zones: CalculationZone[];
     totalTBSA: number;
-    surfaceTBSA: number;
-    deepTBSA: number;
     itp: number;
-    severity: string;
+    burnSeverity: string;
     prognosis: string;
+    createdAt: number;
+    synced: 0 | 1;
 }

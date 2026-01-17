@@ -1,5 +1,5 @@
 import { createContext, useContext, useState } from 'react';
-import { BurnZoneCalculation } from '../models/Calculation';
+import { BurnZoneCalculation } from '../models/calculation';
 
 interface CalculatorContextType {
     zones: BurnZoneCalculation[];

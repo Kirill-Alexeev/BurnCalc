@@ -1,9 +1,11 @@
-import { CalculationResult, BurnZoneCalculation } from '../models/Calculation';
+import { CalculationZone, CalculationEntity } from '../models/Calculation';
+import { AgeGroup } from '../utils/ageCoefficients';
 import { getBurnSeverity, getBurnPrognosis } from '../utils/severity';
 
 export function calculateResult(
-    zones: BurnZoneCalculation[],
-): CalculationResult {
+    zones: CalculationZone[],
+    ageGroup: AgeGroup
+): CalculationEntity {
     let total = 0;
     let surface = 0;
     let deep = 0;
@@ -19,13 +21,17 @@ export function calculateResult(
     });
 
     const itp = surface * 1 + deep * 3;
+    const now = Date.now();
 
     return {
+        id: `calc_${now}`,            // без crypto / uuid — не упадёт
+        ageGroup,
+        zones,
         totalTBSA: Number(total.toFixed(1)),
-        surfaceTBSA: Number(surface.toFixed(1)),
-        deepTBSA: Number(deep.toFixed(1)),
         itp: Number(itp.toFixed(1)),
-        severity: getBurnSeverity(itp),
-        prognosis: getBurnPrognosis(itp)
+        burnSeverity: getBurnSeverity(itp),
+        prognosis: getBurnPrognosis(itp),
+        createdAt: now,
+        synced: 0,
     };
 }

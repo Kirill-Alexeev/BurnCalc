@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useMemo, useState } from 'react';
 import {
     AGE_GROUPS,
@@ -13,6 +13,7 @@ import {
     AGE_GROUP_LABELS,
     BODY_PART_LABELS,
 } from '../../utils/labels';
+import { saveCalculation } from '../../services/storageService';
 
 const DEGREE_LABELS: Record<BurnDegree, string> = {
     1: 'I',
@@ -24,8 +25,8 @@ const DEGREE_LABELS: Record<BurnDegree, string> = {
 export default function CalculatorScreen() {
     const [ageGroup, setAgeGroup] = useState<AgeGroup>('adult');
     const [parts, setParts] = useState<
-        Record<BodyPart, { fraction: BurnFraction; degree: BurnDegree }>
-    >({} as any);
+        Partial<Record<BodyPart, { fraction: BurnFraction; degree: BurnDegree }>>
+    >({});
 
     const zones = useMemo(() => {
         return BODY_PARTS.map(part => {
@@ -33,15 +34,15 @@ export default function CalculatorScreen() {
             if (!state || state.fraction === 0) return null;
 
             return {
-                zoneId: part,
-                zoneName: BODY_PART_LABELS[part],
-                percent: AGE_COEFFICIENTS[ageGroup][part] * state.fraction,
+                bodyPart: part,
+                fraction: state.fraction,
                 degree: state.degree,
+                percent: AGE_COEFFICIENTS[ageGroup][part] * state.fraction,
             };
         }).filter(Boolean) as any[];
     }, [parts, ageGroup]);
 
-    const result = calculateResult(zones);
+    const result = calculateResult(zones, ageGroup);
 
     const setFraction = (part: BodyPart, fraction: BurnFraction) => {
         setParts(prev => ({
@@ -55,6 +56,43 @@ export default function CalculatorScreen() {
             ...prev,
             [part]: { fraction: prev[part]?.fraction ?? 0, degree },
         }));
+    };
+
+    const resetCalculator = () => {
+        Alert.alert(
+            'Сбросить данные?',
+            'Все выбранные параметры будут очищены',
+            [
+                { text: 'Отмена', style: 'cancel' },
+                {
+                    text: 'Сбросить',
+                    style: 'destructive',
+                    onPress: () => setParts({}),
+                },
+            ]
+        );
+    };
+
+    const saveReport = async () => {
+        try {
+            // ⚠️ userId пока захардкожен, потом заменишь на auth.uid
+            const userId = 'local-user';
+
+            await saveCalculation(userId, {
+                ageGroup,
+                zones,
+                totalTBSA: result.totalTBSA,
+                itp: result.itp,
+                burnSeverity: result.burnSeverity,
+                prognosis: result.prognosis,
+            });
+
+            Alert.alert('Готово', 'Отчёт сохранён');
+            setParts({});
+        } catch (e) {
+            Alert.alert('Ошибка', 'Не удалось сохранить отчёт');
+            console.error(e);
+        }
     };
 
     return (
@@ -95,7 +133,9 @@ export default function CalculatorScreen() {
                                             : `${(max * v).toFixed(1)}%`
                                     }
                                     active={parts[part]?.fraction === v}
-                                    onPress={() => setFraction(part, v as BurnFraction)}
+                                    onPress={() =>
+                                        setFraction(part, v as BurnFraction)
+                                    }
                                 />
                             ))}
                         </View>
@@ -107,7 +147,9 @@ export default function CalculatorScreen() {
                                     key={d}
                                     label={DEGREE_LABELS[d as BurnDegree]}
                                     active={parts[part]?.degree === d}
-                                    onPress={() => setDegree(part, d as BurnDegree)}
+                                    onPress={() =>
+                                        setDegree(part, d as BurnDegree)
+                                    }
                                 />
                             ))}
                         </View>
@@ -116,12 +158,32 @@ export default function CalculatorScreen() {
             })}
 
             {zones.length > 0 && (
-                <View style={styles.result}>
-                    <Text>Общая ПОТ: {result.totalTBSA}%</Text>
-                    <Text>ИТП: {result.itp}</Text>
-                    <Text>Тяжесть: {result.severity}</Text>
-                    <Text>Прогноз: {result.prognosis}</Text>
-                </View>
+                <>
+                    <View style={styles.result}>
+                        <Text>Общая ПОТ: {result.totalTBSA}%</Text>
+                        <Text>ИТП: {result.itp}</Text>
+                        <Text>Тяжесть ожогов: {result.burnSeverity}</Text>
+                        <Text>Прогноз: {result.prognosis}</Text>
+                    </View>
+
+                    <View style={styles.actions}>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.saveButton]}
+                            onPress={saveReport}
+                        >
+                            <Text style={styles.actionText}>
+                                Сохранить отчёт
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.resetButton]}
+                            onPress={resetCalculator}
+                        >
+                            <Text style={styles.resetText}>Сбросить</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
             )}
         </ScrollView>
     );
@@ -154,20 +216,10 @@ function SelectorItem({
 }
 
 const styles = {
-    title: {
-        fontSize: 22,
-        marginBottom: 16,
-    },
-    sectionTitle: {
-        marginBottom: 8,
-    },
-    partBlock: {
-        marginTop: 24,
-    },
-    partTitle: {
-        fontSize: 16,
-        marginBottom: 8,
-    },
+    title: { fontSize: 22, marginBottom: 16 },
+    sectionTitle: { marginBottom: 8 },
+    partBlock: { marginTop: 24 },
+    partTitle: { fontSize: 16, marginBottom: 8 },
     label: {
         fontSize: 13,
         color: '#555',
@@ -188,13 +240,22 @@ const styles = {
         borderRightWidth: 1,
         borderRightColor: '#ccc',
     },
-    selectorItemActive: {
-        backgroundColor: '#1E88E5',
-    },
+    selectorItemActive: { backgroundColor: '#1E88E5' },
     result: {
         marginTop: 32,
         padding: 16,
         backgroundColor: '#F5F5F5',
         borderRadius: 8,
     },
+    actions: { marginTop: 16 },
+    actionButton: {
+        paddingVertical: 14,
+        borderRadius: 8,
+        alignItems: 'center' as const,
+        marginBottom: 12,
+    },
+    saveButton: { backgroundColor: '#1E88E5' },
+    resetButton: { backgroundColor: '#E0E0E0' },
+    actionText: { color: '#fff', fontSize: 16 },
+    resetText: { color: '#333', fontSize: 16 },
 };
