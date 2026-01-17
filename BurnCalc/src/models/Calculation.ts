@@ -18,5 +18,8 @@ export interface CalculationEntity {
     prognosis: string;
     createdAt: number;
     synced: 0 | 1;
+    userId?: string;
+    doctorId?: string;
     patientId?: string;
+    patientName?: string;
 }

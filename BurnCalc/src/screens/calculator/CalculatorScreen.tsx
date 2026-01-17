@@ -1,5 +1,5 @@
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useContext } from 'react'; // Добавил useContext
 import {
     AGE_GROUPS,
     AGE_COEFFICIENTS,
@@ -14,6 +14,10 @@ import {
     BODY_PART_LABELS,
 } from '../../utils/labels';
 import { saveCalculation } from '../../services/storageService';
+import { generateUUID } from '../../utils/uuid';
+import { auth } from '../../services/firebase/firebase';
+import { CalculationEntity, CalculationZone } from '../../models/Calculation';
+import { AuthContext } from '../../context/AuthContext'; // Добавил импорт контекста
 
 const DEGREE_LABELS: Record<BurnDegree, string> = {
     1: 'I',
@@ -27,6 +31,8 @@ export default function CalculatorScreen() {
     const [parts, setParts] = useState<
         Partial<Record<BodyPart, { fraction: BurnFraction; degree: BurnDegree }>>
     >({});
+
+    const { user } = useContext(AuthContext); // Получаем пользователя из контекста
 
     const zones = useMemo(() => {
         return BODY_PARTS.map(part => {
@@ -75,18 +81,40 @@ export default function CalculatorScreen() {
 
     const saveReport = async () => {
         try {
-            // ⚠️ userId пока захардкожен, потом заменишь на auth.uid
-            const userId = 'local-user';
+            if (!auth.currentUser || !user) {
+                Alert.alert('Ошибка', 'Пользователь не авторизован');
+                return;
+            }
 
-            await saveCalculation(userId, {
+            // Приводим zones к правильному типу
+            const formattedZones: CalculationZone[] = zones.map(z => ({
+                bodyPart: z.bodyPart,
+                fraction: z.fraction,
+                degree: z.degree,
+                percent: z.percent,
+            }));
+
+            const calc: CalculationEntity = {
+                id: generateUUID(),
                 ageGroup,
-                zones,
+                zones: formattedZones,
                 totalTBSA: result.totalTBSA,
                 itp: result.itp,
                 burnSeverity: result.burnSeverity,
                 prognosis: result.prognosis,
-            });
-            console.log('Сохраняем локально', {userId, ageGroup, zones, result});
+                createdAt: Date.now(),
+                synced: 0,
+            };
+
+            // Сохраняем с информацией о пользователе
+            if (user.role === 'patient') {
+                // Пациент сохраняет как личный расчёт
+                await saveCalculation(calc, user.uid);
+            } else if (user.role === 'doctor') {
+                // Врач сохраняет расчёт без привязки к пациенту
+                // Пациента можно будет привязать позже в истории
+                await saveCalculation(calc, undefined, user.uid);
+            }
 
             Alert.alert('Готово', 'Отчёт сохранён');
             setParts({});

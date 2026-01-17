@@ -2,12 +2,12 @@ import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { AuthContext, Role } from '../../context/AuthContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../navigation/RootNavigator';
+import { AuthStackParamList } from '../../navigation/types';
 import { useNavigation } from '@react-navigation/native';
 
 export default function RegisterScreen() {
     const { register } = useContext(AuthContext);
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState<Role>('patient');

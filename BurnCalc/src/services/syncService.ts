@@ -23,11 +23,11 @@ export async function syncCalculations() {
         await uploadCalculation(calc);
       } else if (role === 'doctor') {
         // Врач сохраняет расчёт для пациента
-        if (!calc.patientId) {
+        if (!(calc as any).patientId) {
           console.warn(`Пропущен patientId для расчёта ${calc.id}`);
           continue;
         }
-        await uploadCalculation(calc, calc.patientId);
+        await uploadCalculation(calc, (calc as any).patientId);
       }
       await markAsSynced(calc.id);
     } catch (e: any) {

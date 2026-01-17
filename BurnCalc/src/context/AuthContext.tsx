@@ -20,7 +20,7 @@ interface AuthContextProps {
     logout: () => Promise<void>;
 }
 
-const DOCTOR_SECRET = 'BURN_DOCTOR_2026';
+const DOCTOR_SECRET = 'BURN';
 
 export const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
