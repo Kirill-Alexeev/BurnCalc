@@ -1,31 +1,17 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import DoctorTabNavigator from './DoctorTabNavigator';
-import CreatePatientScreen from '../screens/patients/CreatePatientScreen';
-import SelectPatientScreen from '../screens/patients/SelectPatientScreen';
+import PatientTabNavigator from './PatientTabNavigator';
 import InfoScreen from '../screens/main/InfoScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function DoctorStackNavigator() {
+export default function PatientStackNavigator() {
     return (
         <Stack.Navigator>
             <Stack.Screen
-                name="DoctorTab"
-                component={DoctorTabNavigator}
+                name="PatientTab"
+                component={PatientTabNavigator}
                 options={{ headerShown: false }}
-            />
-
-            <Stack.Screen
-                name="CreatePatient"
-                component={CreatePatientScreen}
-                options={{ title: 'Новый пациент' }}
-            />
-
-            <Stack.Screen
-                name="SelectPatient"
-                component={SelectPatientScreen}
-                options={{ title: 'Выбор пациента' }}
             />
 
             <Stack.Screen

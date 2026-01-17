@@ -4,7 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
 import DoctorStackNavigator from './DoctorStackNavigator';
-import PatientTabNavigator from './PatientTabNavigator';
+import PatientStackNavigator from './PatientStackNavigator';
 import { AuthContext } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
@@ -23,9 +23,9 @@ export default function RootNavigator() {
                         <Stack.Screen name="Register" component={RegisterScreen} />
                     </>
                 ) : user.role === 'doctor' ? (
-                    <Stack.Screen name="DoctorTabs" component={DoctorStackNavigator} />
+                    <Stack.Screen name="DoctorApp" component={DoctorStackNavigator} />
                 ) : (
-                    <Stack.Screen name="PatientTabs" component={PatientTabNavigator} />
+                    <Stack.Screen name="PatientApp" component={PatientStackNavigator} />
                 )}
             </Stack.Navigator>
         </NavigationContainer>

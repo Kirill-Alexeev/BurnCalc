@@ -245,7 +245,7 @@ function SelectorItem({
 }
 
 const styles = {
-    title: { fontSize: 22, marginBottom: 16 },
+    title: { fontSize: 22, marginBottom: 16, marginTop: 30 },
     sectionTitle: { marginBottom: 8 },
     partBlock: { marginTop: 24 },
     partTitle: { fontSize: 16, marginBottom: 8 },

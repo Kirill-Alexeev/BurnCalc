@@ -121,13 +121,6 @@ export default function HistoryScreen() {
         <View style={styles.container}>
             <Text style={styles.title}>История расчётов</Text>
 
-            {/* Кнопка перезагрузки для отладки */}
-            <TouchableOpacity
-                onPress={loadCalculations}
-            >
-                <Text>Обновить</Text>
-            </TouchableOpacity>
-
             <FlatList
                 data={calculations}
                 keyExtractor={(item) => item.id}
@@ -145,7 +138,7 @@ export default function HistoryScreen() {
 // Стили
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 16 },
-    title: { fontSize: 22, fontWeight: '700', marginBottom: 16 },
+    title: { fontSize: 22, fontWeight: '700', marginBottom: 16, marginTop: 30 },
     card: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginBottom: 12 },
     date: { fontWeight: '600', marginBottom: 6 },
     actions: { marginTop: 12, gap: 8 },
