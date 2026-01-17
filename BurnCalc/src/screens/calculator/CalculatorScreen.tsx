@@ -86,6 +86,7 @@ export default function CalculatorScreen() {
                 burnSeverity: result.burnSeverity,
                 prognosis: result.prognosis,
             });
+            console.log('Сохраняем локально', {userId, ageGroup, zones, result});
 
             Alert.alert('Готово', 'Отчёт сохранён');
             setParts({});

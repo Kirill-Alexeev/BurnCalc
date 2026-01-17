@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './src/context/AuthContext';
 
 import { runMigrations } from './src/db/migrations';
 import Navigation from './src/navigation/RootNavigator';
@@ -10,8 +10,8 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
+    <AuthProvider>
       <Navigation />
-    </NavigationContainer>
+    </AuthProvider>
   );
 }

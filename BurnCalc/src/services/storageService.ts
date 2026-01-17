@@ -15,5 +15,5 @@ export async function saveCalculation(
     };
 
     await insertCalculation(calc);
-    await syncCalculations(userId);
+    await syncCalculations();
 }
