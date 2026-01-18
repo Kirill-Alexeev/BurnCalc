@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 
 export default function InfoScreen() {
     return (
@@ -11,6 +11,16 @@ export default function InfoScreen() {
                 <Text style={styles.text}>
                     Метод быстрой оценки площади ожогов у взрослых:
                 </Text>
+
+                {/* Изображение правила девяток */}
+                <View style={styles.imageContainer}>
+                    <Image
+                        source={require('../../assets/nine_rule.png')}
+                        style={styles.image}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.imageCaption}>Правило девяток для оценки площади ожогов</Text>
+                </View>
 
                 <View style={styles.list}>
                     <Text style={styles.listItem}>• Голова и шея: 9%</Text>
@@ -28,6 +38,16 @@ export default function InfoScreen() {
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Степени тяжести ожогов</Text>
+
+                {/* Изображение степеней ожогов */}
+                <View style={styles.imageContainer}>
+                    <Image
+                        source={require('../../assets/burns_degrees.png')}
+                        style={styles.image}
+                        resizeMode="contain"
+                    />
+                    <Text style={styles.imageCaption}>Степени ожогов: от I до IV</Text>
+                </View>
 
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>I степень</Text>
@@ -118,30 +138,31 @@ const styles = StyleSheet.create({
     sectionTitle: {
         fontSize: 18,
         fontWeight: '600',
-        marginBottom: 12,
+        marginBottom: 16,
         color: '#333',
     },
     text: {
         fontSize: 15,
         lineHeight: 22,
         color: '#555',
-        marginBottom: 8,
+        marginBottom: 12,
     },
     list: {
         marginLeft: 16,
-        marginVertical: 8,
+        marginVertical: 12,
     },
     listItem: {
         fontSize: 15,
         lineHeight: 22,
         color: '#555',
-        marginBottom: 4,
+        marginBottom: 6,
     },
     note: {
         fontSize: 14,
         fontStyle: 'italic',
         color: '#888',
-        marginTop: 8,
+        marginTop: 12,
+        textAlign: 'center',
     },
     card: {
         backgroundColor: '#f0f7ff',
@@ -154,13 +175,34 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontSize: 16,
         fontWeight: '600',
-        marginBottom: 4,
+        marginBottom: 6,
         color: '#1E88E5',
     },
     cardText: {
         fontSize: 14,
         color: '#555',
-        lineHeight: 18,
+        lineHeight: 20,
+    },
+    // Стили для изображений
+    imageContainer: {
+        alignItems: 'center',
+        backgroundColor: '#f8f9fa',
+        borderRadius: 8,
+        padding: 8,
+        marginBottom: 15,
+    },
+    image: {
+        width: '100%',
+        height: 150,
+        borderRadius: 8,
+        marginBottom: 8,
+    },
+    imageCaption: {
+        fontSize: 14,
+        fontStyle: 'italic',
+        color: '#666',
+        textAlign: 'center',
+        marginTop: 8,
     },
     footer: {
         backgroundColor: '#e3f2fd',

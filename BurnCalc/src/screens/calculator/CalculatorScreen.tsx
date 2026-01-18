@@ -189,10 +189,33 @@ export default function CalculatorScreen() {
             {zones.length > 0 && (
                 <>
                     <View style={styles.result}>
-                        <Text>Общая ПОТ: {result.totalTBSA}%</Text>
-                        <Text>ИТП: {result.itp}</Text>
-                        <Text>Тяжесть ожогов: {result.burnSeverity}</Text>
-                        <Text>Прогноз: {result.prognosis}</Text>
+                        <View style={styles.resultRow}>
+                            <Text style={styles.resultLabel}>Общая ПОТ:</Text>
+                            <Text style={styles.resultValue}>{result.totalTBSA}%</Text>
+                        </View>
+
+                        <View style={styles.resultRow}>
+                            <Text style={styles.resultLabel}>ИТП:</Text>
+                            <Text style={styles.resultValue}>{result.itp}</Text>
+                        </View>
+
+                        <View style={styles.resultRow}>
+                            <Text style={styles.resultLabel}>Тяжесть ожогов:</Text>
+                            <Text style={[
+                                styles.resultValue,
+                            ]}>
+                                {result.burnSeverity}
+                            </Text>
+                        </View>
+
+                        <View style={styles.resultRow}>
+                            <Text style={styles.resultLabel}>Прогноз:</Text>
+                            <Text style={[
+                                styles.resultValue,
+                            ]}>
+                                {result.prognosis}
+                            </Text>
+                        </View>
                     </View>
 
                     <View style={styles.actions}>
@@ -270,12 +293,6 @@ const styles = {
         borderRightColor: '#ccc',
     },
     selectorItemActive: { backgroundColor: '#1E88E5' },
-    result: {
-        marginTop: 32,
-        padding: 16,
-        backgroundColor: '#F5F5F5',
-        borderRadius: 8,
-    },
     actions: { marginTop: 16 },
     actionButton: {
         paddingVertical: 14,
@@ -287,4 +304,36 @@ const styles = {
     resetButton: { backgroundColor: '#E0E0E0' },
     actionText: { color: '#fff', fontSize: 16 },
     resetText: { color: '#333', fontSize: 16 },
+
+    result: {
+        marginTop: 32,
+        padding: 8,
+        backgroundColor: '#F8F9FA',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        elevation: 2,
+    },
+    resultRow: {
+        flexDirection: 'row' as const,
+        justifyContent: 'space-between' as const,
+        alignItems: 'center' as const,
+        marginBottom: 16,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#E8E8E8',
+    },
+    resultLabel: {
+        fontSize: 18,
+        fontWeight: '500' as const,
+        color: '#333',
+        flex: 1,
+    },
+    resultValue: {
+        fontSize: 18,
+        fontWeight: '700' as const,
+        color: '#1E88E5',
+        textAlign: 'right' as const,
+        flex: 1,
+    },
 };

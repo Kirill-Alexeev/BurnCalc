@@ -20,8 +20,6 @@ interface AuthContextProps {
     logout: () => Promise<void>;
 }
 
-const DOCTOR_SECRET = 'BURN';
-
 export const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -47,14 +45,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => unsubscribe();
     }, []);
 
-    const register = async (email: string, password: string, role: Role, doctorCode?: string) => {
-        // Проверка для врачей
-        if (role === 'doctor') {
-            if (doctorCode !== DOCTOR_SECRET) {
-                throw new Error('Неверный код подтверждения врача');
-            }
-        }
-
+    const register = async (email: string, password: string, role: Role) => {
         const credential = await createUserWithEmailAndPassword(auth, email, password);
         const profile: UserProfile = {
             uid: credential.user.uid,

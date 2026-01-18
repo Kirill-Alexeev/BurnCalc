@@ -179,9 +179,13 @@ const styles = StyleSheet.create({
     },
     dangerItem: {
         borderBottomColor: '#ffebee',
+        display: 'flex',
+        justifyContent: 'center',
+        backgroundColor: '#ff0202ff',
+        borderRadius: 8,
     },
     dangerText: {
-        color: '#d32f2f',
+        color: '#ffffff',
     },
     footer: {
         textAlign: 'center',

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 interface FilterPanelProps {
     userRole: 'doctor' | 'patient';
@@ -19,6 +20,18 @@ export interface FilterOptions {
 export default function FilterPanel({ userRole, onFilterChange }: FilterPanelProps) {
     const [filters, setFilters] = useState<FilterOptions>({});
     const [showFilters, setShowFilters] = useState(false);
+    const [showDateFromPicker, setShowDateFromPicker] = useState(false);
+    const [showDateToPicker, setShowDateToPicker] = useState(false);
+    const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+    const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+
+    // Функция для форматирования даты в YYYY-MM-DD
+    const formatDate = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
     const updateFilter = (key: keyof FilterOptions, value: string) => {
         const newFilters = { ...filters, [key]: value };
@@ -26,13 +39,53 @@ export default function FilterPanel({ userRole, onFilterChange }: FilterPanelPro
         onFilterChange(newFilters);
     };
 
+    const handleDateFromChange = (event: any, selectedDate?: Date) => {
+        setShowDateFromPicker(false);
+        if (selectedDate) {
+            setDateFrom(selectedDate);
+            const formattedDate = formatDate(selectedDate);
+            updateFilter('dateFrom', formattedDate);
+        }
+    };
+
+    const handleDateToChange = (event: any, selectedDate?: Date) => {
+        setShowDateToPicker(false);
+        if (selectedDate) {
+            setDateTo(selectedDate);
+            const formattedDate = formatDate(selectedDate);
+            updateFilter('dateTo', formattedDate);
+        }
+    };
+
+    const clearDateFrom = () => {
+        setDateFrom(undefined);
+        updateFilter('dateFrom', '');
+    };
+
+    const clearDateTo = () => {
+        setDateTo(undefined);
+        updateFilter('dateTo', '');
+    };
+
     const clearFilters = () => {
         const clearedFilters = {};
         setFilters(clearedFilters);
+        setDateFrom(undefined);
+        setDateTo(undefined);
         onFilterChange(clearedFilters);
     };
 
     const hasActiveFilters = Object.values(filters).some(value => value !== undefined && value !== '');
+
+    // Форматирование даты для отображения
+    const formatDisplayDate = (date: Date | undefined): string => {
+        if (!date) return 'Выберите дату';
+        return date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -42,6 +95,7 @@ export default function FilterPanel({ userRole, onFilterChange }: FilterPanelPro
             >
                 <Text style={styles.toggleButtonText}>
                     {showFilters ? '▲ Скрыть фильтры' : '▼ Показать фильтры'}
+                    {hasActiveFilters && ' ⚠️'}
                 </Text>
             </TouchableOpacity>
 
@@ -51,7 +105,7 @@ export default function FilterPanel({ userRole, onFilterChange }: FilterPanelPro
                         <Text style={styles.title}>Фильтрация</Text>
                         {hasActiveFilters && (
                             <TouchableOpacity onPress={clearFilters}>
-                                <Text style={styles.clearButton}>Сбросить</Text>
+                                <Text style={styles.clearButton}>Сбросить все</Text>
                             </TouchableOpacity>
                         )}
                     </View>
@@ -69,22 +123,77 @@ export default function FilterPanel({ userRole, onFilterChange }: FilterPanelPro
                     )}
 
                     <View style={styles.filterGroup}>
-                        <Text style={styles.label}>Дата (ГГГГ-ММ-ДД)</Text>
+                        <Text style={styles.label}>Дата</Text>
+                        
                         <View style={styles.dateRow}>
-                            <TextInput
-                                style={[styles.input, styles.dateInput]}
-                                placeholder="От"
-                                value={filters.dateFrom || ''}
-                                onChangeText={(text) => updateFilter('dateFrom', text)}
-                            />
-                            <Text style={styles.separator}>—</Text>
-                            <TextInput
-                                style={[styles.input, styles.dateInput]}
-                                placeholder="До"
-                                value={filters.dateTo || ''}
-                                onChangeText={(text) => updateFilter('dateTo', text)}
-                            />
+                            <View style={styles.dateContainer}>
+                                <Text style={styles.dateLabel}>От:</Text>
+                                <TouchableOpacity
+                                    style={styles.dateButton}
+                                    onPress={() => setShowDateFromPicker(true)}
+                                >
+                                    <Text style={[
+                                        styles.dateButtonText,
+                                        dateFrom && styles.dateButtonTextSelected
+                                    ]}>
+                                        {formatDisplayDate(dateFrom)}
+                                    </Text>
+                                </TouchableOpacity>
+                                {dateFrom && (
+                                    <TouchableOpacity
+                                        style={styles.clearDateButton}
+                                        onPress={clearDateFrom}
+                                    >
+                                        <Text style={styles.clearDateText}>✕</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                            
+                            <View style={styles.dateContainer}>
+                                <Text style={styles.dateLabel}>До:</Text>
+                                <TouchableOpacity
+                                    style={styles.dateButton}
+                                    onPress={() => setShowDateToPicker(true)}
+                                >
+                                    <Text style={[
+                                        styles.dateButtonText,
+                                        dateTo && styles.dateButtonTextSelected
+                                    ]}>
+                                        {formatDisplayDate(dateTo)}
+                                    </Text>
+                                </TouchableOpacity>
+                                {dateTo && (
+                                    <TouchableOpacity
+                                        style={styles.clearDateButton}
+                                        onPress={clearDateTo}
+                                    >
+                                        <Text style={styles.clearDateText}>✕</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
                         </View>
+
+                        {/* DateTimePicker для выбора даты */}
+                        {showDateFromPicker && (
+                            <DateTimePicker
+                                value={dateFrom || new Date()}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={handleDateFromChange}
+                                maximumDate={dateTo || new Date()}
+                            />
+                        )}
+
+                        {showDateToPicker && (
+                            <DateTimePicker
+                                value={dateTo || new Date()}
+                                mode="date"
+                                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                onChange={handleDateToChange}
+                                minimumDate={dateFrom}
+                                maximumDate={new Date()}
+                            />
+                        )}
                     </View>
 
                     <View style={styles.filterGroup}>
@@ -155,6 +264,7 @@ const styles = StyleSheet.create({
         color: '#1E88E5',
         fontWeight: '600',
         textAlign: 'center',
+        fontSize: 14,
     },
     filtersContainer: {
         padding: 16,
@@ -163,11 +273,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 20,
     },
     title: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 18,
+        fontWeight: '700',
         color: '#333',
     },
     clearButton: {
@@ -176,41 +286,78 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     filterGroup: {
-        marginBottom: 16,
+        marginBottom: 20,
     },
     label: {
-        fontSize: 14,
-        fontWeight: '500',
-        marginBottom: 6,
-        color: '#555',
+        fontSize: 15,
+        fontWeight: '600',
+        marginBottom: 10,
+        color: '#444',
     },
     input: {
         borderWidth: 1,
         borderColor: '#ddd',
-        borderRadius: 6,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        fontSize: 14,
+        borderRadius: 8,
+        paddingHorizontal: 14,
+        paddingVertical: 10,
+        fontSize: 15,
         backgroundColor: '#f9f9f9',
     },
     dateRow: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 8,
+    },
+    dateContainer: {
+        flex: 1,
+        flexDirection: 'row',
         alignItems: 'center',
     },
-    dateInput: {
+    dateLabel: {
+        fontSize: 14,
+        color: '#666',
+        marginRight: 8,
+        width: 25,
+    },
+    dateButton: {
         flex: 1,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        borderRadius: 8,
+        paddingHorizontal: 8,
+        paddingVertical: 10,
+        backgroundColor: '#f9f9f9',
+        justifyContent: 'center',
+    },
+    dateButtonText: {
+        fontSize: 14,
+        color: '#999',
+        textAlign: 'center',
+    },
+    dateButtonTextSelected: {
+        color: '#333',
+        fontWeight: '500',
+    },
+    clearDateButton: {
+        marginLeft: 5,
+    },
+    clearDateText: {
+        color: '#F44336',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
     rangeRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        gap: 10,
     },
     rangeInput: {
         flex: 1,
         textAlign: 'center',
     },
     separator: {
-        marginHorizontal: 8,
         color: '#888',
         fontSize: 16,
+        fontWeight: '500',
     },
 });

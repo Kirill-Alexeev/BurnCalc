@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     metricValue: {
+        textAlign: 'center',
         fontSize: 18,
         fontWeight: '700',
         color: '#333',

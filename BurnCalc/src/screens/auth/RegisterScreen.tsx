@@ -11,11 +11,10 @@ export default function RegisterScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState<Role>('patient');
-    const [doctorCode, setDoctorCode] = useState('');
 
     const handleRegister = async () => {
         try {
-            await register(email, password, role, doctorCode);
+            await register(email, password, role);
             Alert.alert('Успех', 'Регистрация завершена');
         } catch (e: any) {
             Alert.alert('Ошибка', e.message);
@@ -68,22 +67,6 @@ export default function RegisterScreen() {
                     <Text style={{ color: role === 'doctor' ? '#1E88E5' : 'black' }}>Врач</Text>
                 </TouchableOpacity>
             </View>
-
-            {role === 'doctor' && (
-                <TextInput
-                    placeholder="Код подтверждения врача"
-                    value={doctorCode}
-                    onChangeText={setDoctorCode}
-                    style={{
-                        width: '100%',
-                        padding: 12,
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        borderRadius: 12,
-                        marginBottom: 12,
-                    }}
-                />
-            )}
 
             <TouchableOpacity
                 onPress={handleRegister}
