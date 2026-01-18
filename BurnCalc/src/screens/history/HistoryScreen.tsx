@@ -223,7 +223,15 @@ export default function HistoryScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>История расчётов</Text>
+            <View style={styles.header}>
+                <Text style={styles.title}>История расчётов</Text>
+                <TouchableOpacity
+                    style={styles.chartsButton}
+                    onPress={() => navigation.navigate('Charts')}
+                >
+                    <Text style={styles.chartsButtonText}>📈 Построение графиков</Text>
+                </TouchableOpacity>
+            </View>
 
             {/* Панель фильтров */}
             <SimpleFilterPanel
@@ -275,10 +283,32 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#f8f9fa',
     },
+    header: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    chartsButton: {
+        backgroundColor: '#4CAF50',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 8,
+        width: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+    },
+    chartsButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
+        textAlign: 'center',
+    },
     title: {
         fontSize: 24,
         fontWeight: '700',
         marginBottom: 16,
+        marginTop: 30,
         color: '#333',
         textAlign: 'center',
     },
