@@ -132,81 +132,85 @@ export default function HistoryScreen() {
         setCalculations(filtered);
     };
 
-    const renderItem = ({ item, index }: { item: CalculationEntity; index: number }) => {
+    const renderItem = ({ item }: { item: CalculationEntity }) => {
         const hasPatient = Boolean(item.patientName);
 
         return (
-            <View style={[styles.card, index % 2 === 0 ? styles.cardEven : styles.cardOdd]}>
-                <View style={styles.cardHeader}>
-                    <Text style={styles.date}>
-                        {new Date(item.createdAt).toLocaleDateString()}
-                    </Text>
-                    <Text style={styles.time}>
-                        {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                </View>
-
-                <View style={styles.cardBody}>
-                    <View style={styles.metricRow}>
-                        <View style={styles.metric}>
-                            <Text style={styles.metricLabel}>ПОТ</Text>
-                            <Text style={styles.metricValue}>{item.totalTBSA}%</Text>
-                        </View>
-                        <View style={styles.metric}>
-                            <Text style={styles.metricLabel}>ИТП</Text>
-                            <Text style={styles.metricValue}>{item.itp}</Text>
-                        </View>
-                        <View style={styles.metric}>
-                            <Text style={styles.metricLabel}>Тяжесть</Text>
-                            <Text style={[styles.metricValue, getSeverityColor(item.burnSeverity)]}>
-                                {item.burnSeverity}
-                            </Text>
-                        </View>
+            <View style={styles.card}>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('ReportDetail', { calculation: item })}
+                >
+                    <View style={styles.cardHeader}>
+                        <Text style={styles.date}>
+                            {new Date(item.createdAt).toLocaleDateString()}
+                        </Text>
+                        <Text style={styles.time}>
+                            {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </Text>
                     </View>
 
-                    <Text style={styles.prognosis}>
-                        <Text style={styles.prognosisLabel}>Прогноз: </Text>
-                        {item.prognosis}
-                    </Text>
-
-                    {/* Отображаем имя пациента, если есть */}
-                    {hasPatient && (
-                        <View style={styles.patientBox}>
-                            <Text style={styles.patientLabel}>Пациент:</Text>
-                            <Text style={styles.patientName}>{item.patientName}</Text>
+                    <View style={styles.cardBody}>
+                        <View style={styles.metricRow}>
+                            <View style={styles.metric}>
+                                <Text style={styles.metricLabel}>ПОТ</Text>
+                                <Text style={styles.metricValue}>{item.totalTBSA}%</Text>
+                            </View>
+                            <View style={styles.metric}>
+                                <Text style={styles.metricLabel}>ИТП</Text>
+                                <Text style={styles.metricValue}>{item.itp}</Text>
+                            </View>
+                            <View style={styles.metric}>
+                                <Text style={styles.metricLabel}>Тяжесть</Text>
+                                <Text style={[styles.metricValue, getSeverityColor(item.burnSeverity)]}>
+                                    {item.burnSeverity}
+                                </Text>
+                            </View>
                         </View>
-                    )}
 
-                    {/* Если врач и нет пациента — показываем кнопки */}
-                    {user?.role === 'doctor' && !hasPatient && (
-                        <View style={styles.actions}>
-                            <TouchableOpacity
-                                style={styles.primary}
-                                onPress={() =>
-                                    navigation.navigate('CreatePatient', { calculation: item })
-                                }
-                            >
-                                <Text style={styles.btnText}>Создать профиль пациента</Text>
-                            </TouchableOpacity>
+                        <Text style={styles.prognosis}>
+                            <Text style={styles.prognosisLabel}>Прогноз: </Text>
+                            {item.prognosis}
+                        </Text>
 
-                            <TouchableOpacity
-                                style={styles.secondary}
-                                onPress={() =>
-                                    navigation.navigate('SelectPatient', { calculation: item })
-                                }
-                            >
-                                <Text style={styles.btnText}>Выбрать существующего</Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
+                        {/* Отображаем имя пациента, если есть */}
+                        {hasPatient && (
+                            <View style={styles.patientBox}>
+                                <Text style={styles.patientLabel}>Пациент:</Text>
+                                <Text style={styles.patientName}>{item.patientName}</Text>
+                            </View>
+                        )}
 
-                    {/* Для пациентов показываем метку "личный расчёт" */}
-                    {user?.role === 'patient' && (
-                        <View style={styles.personalBadge}>
-                            <Text style={styles.personalBadgeText}>Личный расчёт</Text>
-                        </View>
-                    )}
-                </View>
+                        {/* Для пациентов показываем метку "личный расчёт" */}
+                        {user?.role === 'patient' && (
+                            <View style={styles.personalBadge}>
+                                <Text style={styles.personalBadgeText}>Личный расчёт</Text>
+                            </View>
+                        )}
+                    </View>
+                </TouchableOpacity>
+
+                {/* КНОПКИ ДЛЯ ВРАЧА ЕСЛИ НЕТ ПАЦИЕНТА */}
+                {user?.role === 'doctor' && !hasPatient && (
+                    <View style={styles.actions}>
+                        <TouchableOpacity
+                            style={styles.primary}
+                            onPress={() =>
+                                navigation.navigate('CreatePatient', { calculation: item })
+                            }
+                        >
+                            <Text style={styles.btnText}>Создать профиль пациента</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.secondary}
+                            onPress={() =>
+                                navigation.navigate('SelectPatient', { calculation: item })
+                            }
+                        >
+                            <Text style={styles.btnText}>Выбрать существующего</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
         );
     };
@@ -331,11 +335,10 @@ const styles = StyleSheet.create({
     card: {
         borderRadius: 10,
         marginBottom: 12,
+        marginLeft: 3,
+        marginRight: 3,
         overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
+        backgroundColor: '#f8f8f8ff',
         elevation: 3,
     },
     cardEven: {
@@ -364,7 +367,7 @@ const styles = StyleSheet.create({
         color: '#666',
     },
     cardBody: {
-        padding: 16,
+        padding: 8,
     },
     metricRow: {
         flexDirection: 'row',
@@ -388,7 +391,6 @@ const styles = StyleSheet.create({
     },
     prognosis: {
         fontSize: 15,
-        marginBottom: 12,
         lineHeight: 20,
     },
     prognosisLabel: {
@@ -424,8 +426,8 @@ const styles = StyleSheet.create({
         color: '#1E88E5',
     },
     actions: {
-        marginTop: 16,
-        gap: 8
+        gap: 8,
+        padding: 8, 
     },
     primary: {
         backgroundColor: '#1E88E5',
@@ -478,5 +480,17 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '600',
         fontSize: 14,
+    },
+    detailButton: {
+        marginTop: 12,
+        paddingTop: 12,
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+        alignItems: 'center',
+    },
+    detailButtonText: {
+        fontSize: 14,
+        color: '#1E88E5',
+        fontWeight: '500',
     },
 });

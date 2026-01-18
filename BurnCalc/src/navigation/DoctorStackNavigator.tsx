@@ -5,6 +5,7 @@ import SelectPatientScreen from '../screens/patients/SelectPatientScreen';
 import InfoScreen from '../screens/main/InfoScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
 import ChartsScreen from '../screens/charts/ChartsScreen';
+import ReportDetailScreen from '../screens/history/ReportDetailScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,6 +46,12 @@ export default function DoctorStackNavigator() {
                 name="Charts"
                 component={ChartsScreen}
                 options={{ title: 'Графики динамики' }}
+            />
+
+            <Stack.Screen
+                name="ReportDetail"
+                component={ReportDetailScreen}
+                options={{ title: 'Детальный отчёт' }}
             />
         </Stack.Navigator>
     );
