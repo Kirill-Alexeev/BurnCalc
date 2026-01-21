@@ -23,8 +23,13 @@ export default function LoginScreen() {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
             <Image
                 source={require('../../assets/logo.png')}
-                style={{ width: 100, height: 150, marginBottom: 16 }}
+                style={{ width: 100, height: 150, marginBottom: 10 }}
             />
+            <Text style={{
+                fontSize: 16,
+                color: '#666',
+                marginBottom: 20,
+            }}>Калькулятор площади ожогов</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 24 }}>Вход</Text>
 
             <TextInput

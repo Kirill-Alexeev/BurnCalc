@@ -10,7 +10,7 @@ export default function RegisterScreen() {
     const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState<Role>('patient');
+    const [role, setRole] = useState<Role>('doctor');
 
     const handleRegister = async () => {
         try {
@@ -25,8 +25,13 @@ export default function RegisterScreen() {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
             <Image
                 source={require('../../assets/logo.png')}
-                style={{ width: 100, height: 150, marginBottom: 16 }}
+                style={{ width: 100, height: 150, marginBottom: 10 }}
             />
+            <Text style={{
+                fontSize: 16,
+                color: '#666',
+                marginBottom: 20,
+            }}>Калькулятор площади ожогов</Text>
             <Text style={{ fontSize: 28, fontWeight: '700', marginBottom: 24 }}>Регистрация</Text>
 
             <TextInput
@@ -58,15 +63,6 @@ export default function RegisterScreen() {
                     marginBottom: 12,
                 }}
             />
-
-            <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-                <TouchableOpacity onPress={() => setRole('patient')} style={{ marginRight: 12 }}>
-                    <Text style={{ color: role === 'patient' ? '#1E88E5' : 'black' }}>Пациент</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setRole('doctor')}>
-                    <Text style={{ color: role === 'doctor' ? '#1E88E5' : 'black' }}>Врач</Text>
-                </TouchableOpacity>
-            </View>
 
             <TouchableOpacity
                 onPress={handleRegister}

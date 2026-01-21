@@ -28,4 +28,19 @@ export async function runMigrations() {
             synced INTEGER NOT NULL
         );
     `);
+
+    await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS notification_schedules (
+            id TEXT PRIMARY KEY NOT NULL,
+            doctorId TEXT NOT NULL,
+            patientId TEXT NOT NULL,
+            calculationId TEXT NOT NULL,
+            patientName TEXT NOT NULL,
+            nextCheckupDate INTEGER NOT NULL,
+            isActive INTEGER NOT NULL DEFAULT 1,
+            createdAt INTEGER NOT NULL,
+            lastNotified INTEGER,
+            notificationId TEXT
+        );
+    `);
 }
